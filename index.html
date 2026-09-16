@@ -226,10 +226,13 @@
       response per condition, and a four-parameter log-logistic (LL.4)
       dose-response model was fit using the <code>drc</code> R package to
       estimate the EC50 / IC50 &mdash; the concentration data combined
-      from batches collected July 2&ndash;July 20. We chose to use the area
-      under the curve instead of the growth rate because the strains grow
-      slowly, which makes it difficult to obtain meaningful data from such
-      a plot.
+      from batches collected July 2&ndash;July 20. The strains grew slower
+      in YPGlycerol than in SCGlucose, which is why the area under the
+      curve was used as opposed to the growth rate of each. Meaningful
+      data could not be obtained for the strains growing in YPGlycerol on
+      a plot of FLC concentration against growth rate. Because the strains
+      in SCGlucose reached stationary phase in 24 hours, the growth was
+      analyzed at both 24 and 72 hour timepoints.
     </p>
     <ul>
       <li>Rendered HTML reports show the full analysis: raw data plots, normalization, model fitting, and IC50 estimates.</li>
