@@ -6,17 +6,17 @@
 <title>Growth Assay Dose-Response Analysis</title>
 <style>
   :root {
-    --purple-900: #3b1d5c;
-    --purple-700: #5b2c86;
-    --purple-600: #6f3aa0;
-    --purple-500: #8451b5;
-    --purple-100: #ece1f7;
+    --purple-900: #6a44a0;
+    --purple-700: #8258b8;
+    --purple-600: #9b74cc;
+    --purple-500: #b18ede;
+    --purple-100: #f1e8fb;
     --cream-100: #fbf6ec;
     --cream-200: #f4ead4;
     --cream-300: #ecdcb8;
-    --text-main: #2f2138;
-    --text-muted: #6b5c7a;
-    --shadow: 0 8px 24px rgba(59, 29, 92, 0.12);
+    --text-main: #3a2c4a;
+    --text-muted: #7a6b8a;
+    --shadow: 0 8px 24px rgba(106, 68, 160, 0.14);
   }
 
   * { box-sizing: border-box; }
@@ -30,10 +30,17 @@
   }
 
   header {
-    background: linear-gradient(135deg, var(--purple-900), var(--purple-600));
+    background: linear-gradient(135deg, var(--purple-700), var(--purple-500));
     color: var(--cream-100);
     padding: 3.5rem 1.5rem 3rem;
     text-align: center;
+  }
+
+  header .byline {
+    margin: 0 0 1.25rem;
+    font-size: 0.95rem;
+    color: var(--cream-200);
+    font-style: italic;
   }
 
   header .eyebrow {
@@ -197,7 +204,7 @@
       --cream-300: #3a2c47;
       --text-main: #f4ead4;
       --text-muted: #cdbedc;
-      --purple-100: #402a5c;
+      --purple-100: #4a3568;
     }
     section.intro, .card { background: #2a2033; }
     .btn-secondary { color: var(--cream-100); }
@@ -209,6 +216,7 @@
 <header>
   <div class="eyebrow">Undergraduate Thesis &middot; Growth Assay Analysis</div>
   <h1>Dose-Response Analysis for the Evolution Experiment</h1>
+  <p class="byline">By Alyssah Mack and Saaz Sakrikar</p>
   <p>
     Fluconazole (FLC) growth curve dose-response analyses used to determine the
     drug concentration at which the evolution experiment would be conducted.
