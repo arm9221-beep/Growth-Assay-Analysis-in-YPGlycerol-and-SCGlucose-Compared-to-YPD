@@ -1,0 +1,293 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Growth Assay Dose-Response Analysis</title>
+<style>
+  :root {
+    --purple-900: #3b1d5c;
+    --purple-700: #5b2c86;
+    --purple-600: #6f3aa0;
+    --purple-500: #8451b5;
+    --purple-100: #ece1f7;
+    --cream-100: #fbf6ec;
+    --cream-200: #f4ead4;
+    --cream-300: #ecdcb8;
+    --text-main: #2f2138;
+    --text-muted: #6b5c7a;
+    --shadow: 0 8px 24px rgba(59, 29, 92, 0.12);
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+    background: var(--cream-100);
+    color: var(--text-main);
+    line-height: 1.6;
+  }
+
+  header {
+    background: linear-gradient(135deg, var(--purple-900), var(--purple-600));
+    color: var(--cream-100);
+    padding: 3.5rem 1.5rem 3rem;
+    text-align: center;
+  }
+
+  header .eyebrow {
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    font-size: 0.8rem;
+    color: var(--purple-100);
+    margin-bottom: 0.75rem;
+    font-weight: 600;
+  }
+
+  header h1 {
+    margin: 0 0 0.75rem;
+    font-size: clamp(1.8rem, 4vw, 2.6rem);
+  }
+
+  header p {
+    max-width: 46rem;
+    margin: 0 auto;
+    color: var(--cream-200);
+    font-size: 1.05rem;
+  }
+
+  main {
+    max-width: 60rem;
+    margin: 0 auto;
+    padding: 2.5rem 1.5rem 4rem;
+  }
+
+  section.intro {
+    background: #fff;
+    border: 1px solid var(--cream-300);
+    border-radius: 14px;
+    padding: 1.75rem 2rem;
+    box-shadow: var(--shadow);
+    margin-bottom: 2.5rem;
+  }
+
+  section.intro h2 {
+    margin-top: 0;
+    color: var(--purple-700);
+    font-size: 1.3rem;
+  }
+
+  section.intro ul {
+    margin: 0.5rem 0 0;
+    padding-left: 1.2rem;
+  }
+
+  section.intro li {
+    margin-bottom: 0.35rem;
+    color: var(--text-muted);
+  }
+
+  section.intro code {
+    background: var(--purple-100);
+    color: var(--purple-900);
+    padding: 0.1rem 0.4rem;
+    border-radius: 4px;
+    font-size: 0.9em;
+  }
+
+  h2.group-title {
+    color: var(--purple-700);
+    font-size: 1.1rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin: 2.5rem 0 1rem;
+    border-bottom: 2px solid var(--cream-300);
+    padding-bottom: 0.5rem;
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+    gap: 1.25rem;
+  }
+
+  .card {
+    background: #fff;
+    border: 1px solid var(--cream-300);
+    border-radius: 14px;
+    padding: 1.5rem;
+    box-shadow: var(--shadow);
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .card .tag {
+    align-self: flex-start;
+    background: var(--purple-100);
+    color: var(--purple-700);
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    padding: 0.25rem 0.6rem;
+    border-radius: 999px;
+  }
+
+  .card h3 {
+    margin: 0;
+    color: var(--text-main);
+    font-size: 1.1rem;
+  }
+
+  .card p {
+    margin: 0;
+    color: var(--text-muted);
+    font-size: 0.92rem;
+  }
+
+  .card .links {
+    margin-top: auto;
+    display: flex;
+    gap: 0.6rem;
+    flex-wrap: wrap;
+  }
+
+  .btn {
+    display: inline-block;
+    text-decoration: none;
+    font-size: 0.85rem;
+    font-weight: 600;
+    padding: 0.5rem 0.9rem;
+    border-radius: 8px;
+    transition: transform 0.08s ease, box-shadow 0.15s ease;
+  }
+
+  .btn:hover { transform: translateY(-1px); }
+
+  .btn-primary {
+    background: var(--purple-600);
+    color: var(--cream-100);
+  }
+
+  .btn-primary:hover { background: var(--purple-700); }
+
+  .btn-secondary {
+    background: var(--cream-200);
+    color: var(--purple-700);
+    border: 1px solid var(--purple-100);
+  }
+
+  .btn-secondary:hover { background: var(--cream-300); }
+
+  footer {
+    text-align: center;
+    padding: 2rem 1.5rem 3rem;
+    color: var(--text-muted);
+    font-size: 0.85rem;
+  }
+
+  footer a { color: var(--purple-600); }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --cream-100: #221a2b;
+      --cream-200: #2b2135;
+      --cream-300: #3a2c47;
+      --text-main: #f4ead4;
+      --text-muted: #cdbedc;
+      --purple-100: #402a5c;
+    }
+    section.intro, .card { background: #2a2033; }
+    .btn-secondary { color: var(--cream-100); }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="eyebrow">Undergraduate Thesis &middot; Growth Assay Analysis</div>
+  <h1>Dose-Response Analysis for the Evolution Experiment</h1>
+  <p>
+    Fluconazole (FLC) growth curve dose-response analyses used to determine the
+    drug concentration at which the evolution experiment would be conducted.
+    Each report fits an IC50 dose-response model to growth curve data
+    (area under the curve) across a panel of FLC concentrations, comparing an
+    alternate media condition to the YPD control.
+  </p>
+</header>
+
+<main>
+  <section class="intro">
+    <h2>About this analysis</h2>
+    <p>
+      Growth curves were collected for yeast strains across a range of FLC
+      concentrations (0&ndash;64 &mu;g/mL) in two media backgrounds
+      (<code>SCGlu</code> and <code>YPGly</code>), each compared against a
+      <code>YPD</code> control, and read at two timepoints
+      (24 hours and 72 hours). For each combination, growth (area under the
+      growth curve, <code>auc_l</code>) was normalized to the maximum observed
+      response per condition, and a four-parameter log-logistic (LL.4)
+      dose-response model was fit using the <code>drc</code> R package to
+      estimate the EC50 / IC50 &mdash; the concentration data combined
+      from batches collected July 2&ndash;July 20.
+    </p>
+    <ul>
+      <li>Rendered HTML reports show the full analysis: raw data plots, normalization, model fitting, and IC50 estimates.</li>
+      <li>The linked <code>.Rmd</code> files are the R Markdown source code used to generate each report.</li>
+    </ul>
+  </section>
+
+  <h2 class="group-title">24-hour timepoint</h2>
+  <div class="grid">
+    <div class="card">
+      <span class="tag">SCGlu vs YPD</span>
+      <h3>Dose-Response &middot; 24 hrs</h3>
+      <p>IC50 model comparing SC + Glucose media growth to the YPD control at 24 hours.</p>
+      <div class="links">
+        <a class="btn btn-primary" href="reports/Doseresponse_24hrs_SCGluvsYPD.html">View report</a>
+        <a class="btn btn-secondary" href="reports/Doseresponse_24hrs_SCGluvsYPD.Rmd">View Rmd source</a>
+      </div>
+    </div>
+    <div class="card">
+      <span class="tag">YPGly vs YPD</span>
+      <h3>Dose-Response &middot; 24 hrs</h3>
+      <p>IC50 model comparing YP + Glycerol media growth to the YPD control at 24 hours.</p>
+      <div class="links">
+        <a class="btn btn-primary" href="reports/Doseresponse_24hrs_YPGlyvsYPD.html">View report</a>
+        <a class="btn btn-secondary" href="reports/Doseresponse_24hrs_YPGlyvsYPD.Rmd">View Rmd source</a>
+      </div>
+    </div>
+  </div>
+
+  <h2 class="group-title">72-hour timepoint</h2>
+  <div class="grid">
+    <div class="card">
+      <span class="tag">SCGlu vs YPD</span>
+      <h3>Dose-Response &middot; 72 hrs</h3>
+      <p>IC50 model comparing SC + Glucose media growth to the YPD control at 72 hours.</p>
+      <div class="links">
+        <a class="btn btn-primary" href="reports/Doseresponse_72hrs_SCGluvsYPD.html">View report</a>
+        <a class="btn btn-secondary" href="reports/Doseresponse_72hrs_SCGluvsYPD.Rmd">View Rmd source</a>
+      </div>
+    </div>
+    <div class="card">
+      <span class="tag">YPGly vs YPD</span>
+      <h3>Dose-Response &middot; 72 hrs</h3>
+      <p>IC50 model comparing YP + Glycerol media growth to the YPD control at 72 hours. Combined analysis of July 2 and July 20 data.</p>
+      <div class="links">
+        <a class="btn btn-primary" href="reports/Doseresponse_72hrs_YPGlyvsYPD.html">View report</a>
+        <a class="btn btn-secondary" href="reports/Doseresponse_72hrs_YPGlyvsYPD.Rmd">View Rmd source</a>
+      </div>
+    </div>
+  </div>
+</main>
+
+<footer>
+  Dose-response method adapted from the
+  <a href="https://www.youtube.com/watch?v=yZRvzYsWqJw" target="_blank" rel="noopener">Babraham Bioinformatics IC50 tutorial</a>.
+</footer>
+
+</body>
+</html>

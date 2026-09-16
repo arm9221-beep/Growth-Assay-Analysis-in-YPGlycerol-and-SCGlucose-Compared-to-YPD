@@ -1,0 +1,157 @@
+---
+title: "Analysis of growth curve outputs"
+author: "Saaz and Alyssah"
+date: "2026-09-15"
+output: html_document
+---
+
+Dose-response curves for IC50 calculation adapted from Babrham Bioinformatics tutorial: https://www.youtube.com/watch?v=yZRvzYsWqJw
+Made after "Combined_outputs_analysis_June15". 
+As a result, outlier batch J9 is already removed.
+Changes made to input file (addition of replicates column) to accommodate dose-response code.
+NOTE - APR 2025 - figures modified to only look at control strains.
+
+This code deals with each CNV strain, one at a time. 
+
+
+```{r setup, warning=FALSE}
+library(ggplot2)
+library(readxl)
+library(forcats)
+library(drc)
+library(tidyverse)
+library(broom)
+
+All_growthcurve_output = read_excel("combinedoutputs_24hrs.xlsx")
+
+
+Pilot_media="SCGlu"
+All_growthcurve_output=All_growthcurve_output[All_growthcurve_output$Media!="YPGly",]
+```
+
+
+To follow the tutorial mentioned above, this will be calculated for each CNV strain vs all control strains.
+That must be done by for loop. But the result of one strain will be shown individually here.
+
+Initial setup data for use in IC50 calculation:
+1. Combine all controls from all batches (based on "Combined_outputs_analysis_June15" showing similarity across batches).
+2. Create new variable including replicate
+3. Plot the data (each replicate visible)
+
+```{r Pilot_strain_data}
+
+Mod_growthcurve_output=All_growthcurve_output[All_growthcurve_output$Media=="YPD",]
+
+Pilot_output=All_growthcurve_output[All_growthcurve_output$Media==paste(Pilot_media),]
+
+Mod_growthcurve_output=rbind(Mod_growthcurve_output,Pilot_output)
+
+Mod_growthcurve_output$Newsample=paste(Mod_growthcurve_output$Media,"_",Mod_growthcurve_output$Bio_rep,"_",Mod_growthcurve_output$Tech_rep)
+
+ggplot(Mod_growthcurve_output,aes(x=FLC_conc, y=auc_l, group=Newsample, colour=Media)) + geom_line() + geom_point() + theme_bw() + ggtitle(paste("Raw data ", Pilot_media, " vs All Controls"))
+
+ggplot(Mod_growthcurve_output,aes(x=FLC_conc, y=auc_l, group=Newsample, colour=Media)) + geom_line() + geom_point() + theme_bw() + scale_x_log10() + ggtitle(paste("Raw data ", Pilot_media, " vs All Controls - log scale"))
+
+#ADDED APR 2025
+# Controlonly1=Mod_growthcurve_output[Mod_growthcurve_output$Type=="Control",]
+# 
+# ggplot(Controlonly1,aes(x=FLC_conc, y=r, group=Newsample, colour=Type)) + geom_line() + geom_point() + theme_bw() + scale_x_log10() + ggtitle("Control media - log scale x axis")
+```
+
+Find mean grwoth rate for each type (CNV or control) in each FLC conc, and then find the max of these. Normalise all rates by the relevant max (for control and CNV separately). Tidy and plot normalised data.
+
+```{r tidy_data}
+
+Mod_growthcurve_output %>%
+  group_by(FLC_conc,Media) %>%
+  summarise(
+    max_response=mean(auc_l)
+  ) %>%
+  ungroup() %>%
+  arrange(desc(max_response)) %>%
+  group_by(Media) %>%
+  slice(1) %>%
+  ungroup() %>%
+  dplyr::select(-FLC_conc) -> max_rates
+
+max_rates
+
+Mod_growthcurve_output %>%
+  left_join(max_rates) %>%
+  mutate(
+    norm_auc=100*auc_l/max_response
+  ) %>%
+  dplyr::select(FLC_conc,Media,Newsample,auc_l,norm_auc) -> drc_norm
+
+drc_norm
+
+ggplot(drc_norm,aes(x=FLC_conc, y=norm_auc, group=Newsample, colour=Media)) + geom_line() + geom_point() + theme_bw() + scale_x_log10() + ggtitle(paste("Normalised growth rate ", Pilot_media, " vs All Controls - log scale"))
+``` 
+
+
+
+
+
+adding error bar to mean data, and plotting it
+```{r error_bar}
+
+drc_norm %>%
+  dplyr::group_by(FLC_conc,Media) %>%
+  dplyr::summarise(
+    sem = sd(norm_auc)/sqrt(n()),
+    response=mean(norm_auc)
+  ) -> drc_per_condition
+
+drc_per_condition
+
+ggplot(drc_per_condition,aes(x=FLC_conc, y=response, ymin=response-sem, ymax=response+sem, colour=Media)) + geom_line() + geom_point() +  geom_errorbar(width=0.1) + theme_bw() + scale_x_log10() + ggtitle(paste("Normalised mean data ", Pilot_media, " vs controls - log scale"))
+
+#ADDED APR 2025
+# Controlonly2=drc_per_condition[drc_per_condition$Type=="Control",]
+# ggplot(Controlonly2,aes(x=FLC_conc, y=response, ymin=response-sem, ymax=response+sem, colour=Type)) + geom_line() + geom_point() +  geom_errorbar(width=0.1) + theme_bw() + scale_x_log10() + ggtitle("Normalised mean data- log scale")
+```
+
+Fitting to IC50 curve.
+
+```{r fitting}
+drm (
+  data = drc_per_condition,
+  formula = response ~ FLC_conc,
+  curveid = Media,
+  fct = LL.4(names=c("Hill slope","Min", "Max","EC50"))
+) -> model
+
+tidy(model)
+
+compParm(model, "EC50", "-")
+```
+
+Showing model fit
+
+```{r fit}
+
+
+dose=c(0,4,8,16,32,64,0,4,8,16,32,64)
+condition=c("YPD","YPD","YPD","YPD","YPD","YPD","SCGlu","SCGlu","SCGlu","SCGlu","SCGlu","SCGlu")
+predicted_data = data.frame(
+  FLC_conc = dose, Type = condition
+)
+
+predict(model,newdata=predicted_data) -> predicted_data$prediction
+
+drc_per_condition %>%
+  ggplot(aes(x=FLC_conc,y=response,colour=Media)) + geom_point() + scale_x_log10() + theme_bw() + geom_line(data=predicted_data,aes(x=FLC_conc,y=prediction,colour=Type))
+
+#ADDED APR 2025
+# Controlonly3=predicted_data[predicted_data$Type=="Control",]
+# 
+# Control_doseresponsemodel=
+#   Controlonly2 %>%
+#   ggplot(aes(x=FLC_conc,y=response,colour=Type)) + geom_point() + scale_x_log10() + theme_bw() + geom_line(data=Controlonly3,aes(x=FLC_conc,y=prediction)) + ggtitle("IC50 model (line) with actual data (points)") + geom_vline(xintercept=23.1,linetype="dashed")
+# 
+# Control_doseresponsemodel
+# 
+# ggsave("Control_doseresponsemodel.pdf", Control_doseresponsemodel, device="pdf")
+```
+
+
