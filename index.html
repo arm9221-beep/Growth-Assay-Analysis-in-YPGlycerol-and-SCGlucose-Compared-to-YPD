@@ -6,10 +6,10 @@
 <title>Growth Assay Dose-Response Analysis</title>
 <style>
   :root {
-    --purple-900: #6a44a0;
-    --purple-700: #8258b8;
-    --purple-600: #9b74cc;
-    --purple-500: #b18ede;
+    --purple-900: #7d57b3;
+    --purple-700: #9873c9;
+    --purple-600: #ab8ad4;
+    --purple-500: #c2a5e2;
     --purple-100: #f1e8fb;
     --cream-100: #fbf6ec;
     --cream-200: #f4ead4;
@@ -196,19 +196,6 @@
   }
 
   footer a { color: var(--purple-600); }
-
-  @media (prefers-color-scheme: dark) {
-    :root {
-      --cream-100: #221a2b;
-      --cream-200: #2b2135;
-      --cream-300: #3a2c47;
-      --text-main: #f4ead4;
-      --text-muted: #cdbedc;
-      --purple-100: #4a3568;
-    }
-    section.intro, .card { background: #2a2033; }
-    .btn-secondary { color: var(--cream-100); }
-  }
 </style>
 </head>
 <body>
@@ -239,7 +226,10 @@
       response per condition, and a four-parameter log-logistic (LL.4)
       dose-response model was fit using the <code>drc</code> R package to
       estimate the EC50 / IC50 &mdash; the concentration data combined
-      from batches collected July 2&ndash;July 20.
+      from batches collected July 2&ndash;July 20. We chose to use the area
+      under the curve instead of the growth rate because the strains grow
+      slowly, which makes it difficult to obtain meaningful data from such
+      a plot.
     </p>
     <ul>
       <li>Rendered HTML reports show the full analysis: raw data plots, normalization, model fitting, and IC50 estimates.</li>
@@ -283,7 +273,7 @@
     <div class="card">
       <span class="tag">YPGly vs YPD</span>
       <h3>Dose-Response &middot; 72 hrs</h3>
-      <p>IC50 model comparing YP + Glycerol media growth to the YPD control at 72 hours. Combined analysis of July 2 and July 20 data.</p>
+      <p>IC50 model comparing YP + Glycerol media growth to the YPD control at 72 hours.</p>
       <div class="links">
         <a class="btn btn-primary" href="reports/Doseresponse_72hrs_YPGlyvsYPD.html">View report</a>
         <a class="btn btn-secondary" href="reports/Doseresponse_72hrs_YPGlyvsYPD.Rmd">View Rmd source</a>
